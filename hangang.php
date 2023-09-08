@@ -16,23 +16,22 @@ class Hangang{
         $RESPONSE = $this->RESPONSE;
         $RETURN = array();
 
-        if ($RESPONSE === null || $RESPONSE['status'] !== "success") {
+        if ($RESPONSE === null || $RESPONSE['STATUS'] !== "OK") {
             $RETURN['STATUS'] = "ERR";
             $RETURN['MSG'] = "API를 불러오는데 실패했습니다.";
         } else {
             $RETURN['STATUS'] = "OK";
-            $RETURN['MSG'] = "정상 처리되었습니다.";
-            $RETURN['Check_UID'] = $RESPONSE['uid'];
-            $RETURN['HANGANG'] = array(
-                "TEMP" => $RESPONSE['temp'],
-                "TIME" => $RESPONSE['time'],
-            );
-            $RETURN['NAKDONG'] = array(
-                "TEMP" => $RESPONSE['nakdong_temp'],
-                "TIME" => $RESPONSE['nakdong_time'],
-            );
+            $RETURN['MSG'] = $RESPONSE['MSG'];
+            $RETURN['CACHE_META'] = $RESPONSE['DATAs']['CACHE_META'];
+
+            foreach($RESPONSE['DATAs']['DATA']['HANGANG'] as $LOCATION => $VALUE) {
+                $RETURN['HANGANG'][$LOCATION] = array(
+                    "TEMP" => $VALUE['TEMP'],
+                    "LAST_UPDATE" => $VALUE['LAST_UPDATE'],
+                    "PH" => $VALUE['PH']
+                );
+            }
         }
         return $RETURN;
     }
 }
-
