@@ -1,53 +1,46 @@
-# Hangang API Wrapper
+## Hangang API Wrapper
 
-This is a PHP wrapper for the Hangang API, which provides information about the Hangang River and Nakdong River temperatures.
+### Introduction
 
-## Usage
+This repository contains a simple PHP class for fetching and processing data from the Hangang API. The `Hangang` class provides methods to request data from the API, parse the response, and retrieve specific information about the Hangang.
 
-### Installation
+### Features
 
-No installation is required for this wrapper. Simply include the `Hangang.php` file in your PHP project.
+- Uses the `file_get_contents` function to fetch data from the Hangang API.
+- Decodes the JSON response and provides a method to extract relevant information.
+- Ensures that the data fetched from the API is in the expected format before processing.
 
-### Example
+### Usage
 
-```php
-<?php
+1. **Initialization**
+   
+   First, instantiate the `Hangang` class.
+   
+   ```php
+   $hangang = new Hangang();
+   ```
 
-require_once 'Hangang.php';
+2. **Request Data**
+   
+   Use the `request` method to fetch data from the Hangang API.
+   
+   ```php
+   $hangang->request();
+   ```
 
-$hangang = new Hangang();
-$hangang->request();
-$info = $hangang->getInfo();
+3. **Retrieve Information**
+   
+   The `getInfo` method can be used to get parsed data from the Hangang API. This method returns an associative array containing the status, a message, cache metadata, and detailed data for different locations in Hangang.
+   
+   ```php
+   $info = $hangang->getInfo();
+   print_r($info);
+   ```
 
-echo "Status: " . $info['STATUS'] . "\n";
-echo "Message: " . $info['MSG'] . "\n";
+### Error Handling
 
-if ($info['STATUS'] === "OK") {
-    echo "Check UID: " . $info['Check_UID'] . "\n";
-    echo "Hangang Temperature: " . $info['HANGANG']['TEMP'] . "\n";
-    echo "Hangang Time: " . $info['HANGANG']['TIME'] . "\n";
-    echo "Nakdong Temperature: " . $info['NAKDONG']['TEMP'] . "\n";
-    echo "Nakdong Time: " . $info['NAKDONG']['TIME'] . "\n";
-}
-```
-### API Response
+The `getInfo` method ensures that the fetched data is in the expected format. If there's an issue with the API response, the method returns an error status and an error message.
 
-The `getInfo()` method returns an array with the following structure:
-
-- `STATUS`: The status of the API request. Possible values are "OK" or "ERR".
-- `MSG`: A message indicating the result of the API request.
-- `Check_UID`: The UID associated with the API response.
-- `HANGANG`:
-  - `TEMP`: The temperature of the Hangang River.
-  - `TIME`: The time when the temperature was last updated for the Hangang River.
-- `NAKDONG`:
-  - `TEMP`: The temperature of the Nakdong River.
-  - `TIME`: The time when the temperature was last updated for the Nakdong River.
-
-### Dependencies
-
-This wrapper has no external dependencies.
-
-## License
+### License
 
 This project is licensed under the MIT License
