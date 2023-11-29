@@ -1,37 +1,41 @@
 <?php
 class Hangang{
-    private $ENDPOINT;
+    private $ENDPOINT = "https://api.hangang.life/";
     private $RESPONSE;
 
-    public function __construct(){
-        $this->ENDPOINT = "https://api.hangang.life/";
-    }
-
     public function request(){
-        $RESPONSE = file_get_contents($this->ENDPOINT);
-        $this->RESPONSE = json_decode($RESPONSE, true);
+        $CURL = curl_init($this->ENDPOINT);
+        curl_setopt_array($CURL, array(
+          CURLOPT_RETURNTRANSFER => true,
+          CURLOPT_FOLLOWLOCATION => true,
+          CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+          CURLOPT_CUSTOMREQUEST => 'GET',
+          CURLOPT_HTTPHEADER => array('User-Agent: Renyu106/Hangang-API'),
+          CURLOPT_SSL_VERIFYPEER => false,
+          CURLOPT_SSL_VERIFYHOST => false,
+        ));
+        $this->RESPONSE = json_decode(curl_exec($CURL), true);
+        curl_close($CURL);
     }
 
     public function getInfo(){
         $RESPONSE = $this->RESPONSE;
-        $RETURN = array();
-
-        if ($RESPONSE === null || $RESPONSE['STATUS'] !== "OK") {
-            $RETURN['STATUS'] = "ERR";
-            $RETURN['MSG'] = "API를 불러오는데 실패했습니다.";
-        } else {
-            $RETURN['STATUS'] = "OK";
-            $RETURN['MSG'] = $RESPONSE['MSG'];
-            $RETURN['CACHE_META'] = $RESPONSE['DATAs']['CACHE_META'];
-
-            foreach($RESPONSE['DATAs']['DATA']['HANGANG'] as $LOCATION => $VALUE) {
-                $RETURN['HANGANG'][$LOCATION] = array(
-                    "TEMP" => $VALUE['TEMP'],
-                    "LAST_UPDATE" => $VALUE['LAST_UPDATE'],
-                    "PH" => $VALUE['PH']
-                );
-            }
+        $RETURN = array('STATUS' => "ERR", 'MSG' => "API를 불러오는데 실패했습니다.");
+        if ($RESPONSE && $RESPONSE['STATUS'] === "OK") {
+            $RETURN = array(
+                'STATUS' => "OK",
+                'MSG' => $RESPONSE['MSG'],
+                'CACHE_META' => $RESPONSE['DATAs']['CACHE_META'],
+                'HANGANG' => array_map(function($VALUE){
+                    return array(
+                        "TEMP" => $VALUE['TEMP'],
+                        "LAST_UPDATE" => $VALUE['LAST_UPDATE'],
+                        "PH" => $VALUE['PH']
+                    );
+                }, $RESPONSE['DATAs']['DATA']['HANGANG'])
+            );
         }
         return $RETURN;
     }
 }
+
